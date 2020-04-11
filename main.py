@@ -304,7 +304,7 @@ def handle_message(event):
             secs = setting_['time']*60-stoptime
             s.restart()
             executer = ThreadPoolExecutor(1)
-            executer.submit(count, secs,label)
+            executer.submit(count, secs)
             if setting_['use'] == False:
                 executer = ThreadPoolExecutor(1)
                 executer.submit(pointcount, secs,s_point,stoppoint,setting_['point'])
