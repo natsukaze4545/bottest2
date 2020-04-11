@@ -16,6 +16,9 @@ import math
 import json
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
+
+set_ = 2
+
 app = Flask(__name__)
 
 stoptime = 0
@@ -27,7 +30,8 @@ setting_ = {
     'name':'name',
     'point':0,
 	'time':0,
-	'timepoint':0
+	'timepoint':0,
+    'ID':''
 }
 
 setting2 = {
@@ -36,6 +40,14 @@ setting2 = {
 	'setting3':False,
 	'setting4':False,
 	'setting5':False,
+}
+
+Time = {
+    'count':0,
+    'pointcount_1':0,
+    'pointcount_2':0,
+    'pointcount2_1':0,
+    'pointcount2_2':0,
 }
 '''
 data = {
@@ -135,6 +147,51 @@ def timecount(secs):
 		time_ = '00:{}'.format(str_s)
 	return time_
 
+
+
+def count(secs):
+    global set
+    for i in range(secs, -1, -1):
+        if set == 1:
+            if i == 0:
+                if setting_['use'] == False:
+                    line_bot_api.reply_message(setting_['ID'],TextSendMessage(text='終了！！\n\n経過時間 : {count}\n経過ポイント : {pointcount_1}\n合計ポイント : {pointcount_2}'.format(count=Time['count'],pointcount_1=Time['pointcount_1'],pointcount_2=Time['pointcount_2'])))
+                if setting_['use'] == True:
+                    line_bot_api.reply_message(setting_['ID'],TextSendMessage(text='終了！！\n\n経過時間 : {count}\n経過ポイント : {pointcount_1}\n合計ポイント : {pointcount_2}'.format(count=Time['count'],pointcount_1=Time['pointcount2_1'],pointcount_2=Time['pointcount2_2'])))
+            else:
+                Time['count'] = timecount(i)
+                #経過時間
+                time.sleep(1)
+        else:
+            pass
+
+
+def pointcount(secs,s_point,point,point2):
+	global set
+	global stoppoint
+	for i in range(0,secs):
+		if set == 1:
+			Time['pointcount_1'] = '{}ポイント'.format(math.floor(point+i*s_point))
+            #経過ポイント
+			Time['pointcount_2'] = '{}ポイント'.format(math.floor(point2+point+i*s_point))
+            #合計ポイント
+			stoppoint = point+i*s_point
+			time.sleep(1)
+		else:
+			pass
+
+def pointcount2(secs,s_point,point,point2):
+	global set
+	global stoppoint
+	for i in range(0,secs):
+		if set == 1:
+			Time['pointcount2_1'] = '{}ポイント'.format(math.floor(0-(point+i*s_point)))
+			Time['pointcount2_2'] = '{}ポイント'.format(math.floor(point2-(point+i*s_point)))
+			stoppoint = point+i*s_point
+			time.sleep(1)
+		else:
+			pass
+
 @app.route("/")
 def hello_world():
     return "hello world!"
@@ -158,28 +215,31 @@ def callback():
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
+    global set_
+    global stoptime
     msg_from = event.reply_token
     msg_text = event.message.text
     if msg_text == '設定する':
         line_bot_api.reply_message(msg_from,TextSendMessage(text='まずは貯めるのか使うのかを教えてね！\n貯める or 使う'))
         setting2['setting1'] = True
+        setting_['ID'] = msg_from
 
 
-    if msg_text == '貯める' and setting2['setting1'] == True:
+    if msg_text == '貯める' and setting2['setting1'] == True and setting_['ID'] == msg_from:
         setting_['use'] = False
         setting2['setting1'] = False
         setting2['setting2'] = True
         line_bot_api.reply_message(msg_from,TextSendMessage(text='OK！貯めるに設定したよ！\n次は行う人の名前を教えてね！(ニックネーム可)\n[打ち方] 名前:"行う人の名前"\n例: たろうくんの場合　名前:たろう'))
 
 
-    if msg_text == '使う' and setting2['setting1'] == True:
+    if msg_text == '使う' and setting2['setting1'] == True and setting_['ID'] == msg_from:
         setting_['use'] = True
         setting2['setting1'] = False
         setting2['setting2'] = True
         line_bot_api.reply_message(msg_from,TextSendMessage(text='OK！使うに設定したよ！\n次は行う人の名前を教えてね！(ニックネーム可)\n[打ち方] 名前:"行う人の名前"\n例: たろうくんの場合　名前:たろう'))
 
 
-    if '名前' in msg_text and setting2['setting2'] == True:
+    if '名前' in msg_text and setting2['setting2'] == True and setting_['ID'] == msg_from:
         setting2['setting2'] = False
         setting2['setting3'] = True
         name = msg_text.replace("名前:","")
@@ -192,7 +252,7 @@ def handle_message(event):
             line_bot_api.reply_message(msg_from,TextSendMessage(text='OK！今までの合計ポイントは{}だよ！\n次は1分間に消費するポイント数を設定してね！\n[打ち方] ポイント:"一分当たりの消費ポイント(数字)"\n例: 3ポイントの場合　ポイント:3'.format(point)))
 
 
-    if 'ポイント' in msg_text and setting2['setting3'] == True:
+    if 'ポイント' in msg_text and setting2['setting3'] == True and setting_['ID'] == msg_from:
         setting2['setting3'] = False
         setting2['setting4'] = True
         str_timepoint = msg_text.replace("ポイント:","")
@@ -201,7 +261,7 @@ def handle_message(event):
         line_bot_api.reply_message(msg_from,TextSendMessage(text='OK！{}ポイントに設定できたよ！\n最後に、何分行うか設定してね！\n[打ち方] 時間:"行う分数(数字)"\n例: 5分の場合　時間:5'.format(timepoint)))
 
 
-    if '時間' in msg_text and setting2['setting4'] == True:
+    if '時間' in msg_text and setting2['setting4'] == True and setting_['ID'] == msg_from:
         setting2['setting4'] = False
         str_time = msg_text.replace("時間:","")
         int_time = int(str_time)
@@ -217,6 +277,50 @@ def handle_message(event):
         if setting_['use'] == True:
             line_bot_api.reply_message(msg_from,TextSendMessage(text='設定項目\n貯めるか使うか : 使う\n行う人の名前 : {name}\n今までのポイント : {point}\n一分当たりの消費ポイント : {timepoint}\n行う時間 : {time_}'.format(name=setting_['name'],point=setting_['point'],timepoint=setting_['timepoint'],time_=setting_['time'])))
 
+    if 'スタート' == msg_text:
+        s_point = round(setting_['timepoint']/60,2)
+        if set == 1 or set == 2:
+            set = 1
+            secs = setting_['time']*60
+            s.start()
+            executer = ThreadPoolExecutor(1)
+            executer.submit(count, secs)
+            if setting_['use'] == False:
+                executer = ThreadPoolExecutor(1)
+                executer.submit(pointcount, secs,s_point,stoppoint,setting_['point'])
+            if setting_['use'] == True:
+                executer = ThreadPoolExecutor(1)
+                executer.submit(pointcount2, secs,s_point,stoppoint,setting_['point'])
+       	elif set == 0:
+            set = 1
+            secs = setting_['time']*60-stoptime
+            s.restart()
+            executer = ThreadPoolExecutor(1)
+            executer.submit(count, secs,label)
+            if setting_['use'] == False:
+                executer = ThreadPoolExecutor(1)
+                executer.submit(pointcount, secs,s_point,stoppoint,setting_['point'])
+            if setting_['use'] == True:
+                executer = ThreadPoolExecutor(1)
+                executer.submit(pointcount2, secs,s_point,stoppoint,setting_['point'])
+        line_bot_api.reply_message(msg_from,TextSendMessage(text='スタートしたよ！\n一時停止したいときは ストップ と言ってね！\n確認 で進行状況が確認できるよ！'))
+
+
+    if 'ストップ' == msg_text:
+        if set == 1:
+        	t1 = s.stop()
+        	set = 0
+        	stoptime = math.floor(t1)
+        if setting_['use'] == False:
+            line_bot_api.reply_message(msg_from,TextSendMessage(text='スタート で再スタートできるよ！\n経過時間 : {count}\n経過ポイント : {pointcount_1}\n合計ポイント : {pointcount_2}'.format(count=Time['count'],pointcount_1=Time['pointcount_1'],pointcount_2=Time['pointcount_2'])))
+        if setting_['use'] == True:
+            line_bot_api.reply_message(msg_from,TextSendMessage(text='スタート で再スタートできるよ！\n経過時間 : {count}\n経過ポイント : {pointcount_1}\n合計ポイント : {pointcount_2}'.format(count=Time['count'],pointcount_1=Time['pointcount2_1'],pointcount_2=Time['pointcount2_2'])))
+
+    if '確認' == msg_text:
+        if setting_['use'] == False:
+            line_bot_api.reply_message(msg_from,TextSendMessage(text='経過時間 : {count}\n経過ポイント : {pointcount_1}\n合計ポイント : {pointcount_2}'.format(count=Time['count'],pointcount_1=Time['pointcount_1'],pointcount_2=Time['pointcount_2'])))
+        if setting_['use'] == True:
+            line_bot_api.reply_message(msg_from,TextSendMessage(text='経過時間 : {count}\n経過ポイント : {pointcount_1}\n合計ポイント : {pointcount_2}'.format(count=Time['count'],pointcount_1=Time['pointcount2_1'],pointcount_2=Time['pointcount2_2'])))
 
 
 if __name__ == "__main__":
