@@ -51,7 +51,7 @@ def namecheck(ID,name):
             point = date[ID][name]
             return point
     else:
-        data[ID] = {name:0}
+        date[ID] = {name:0}
         with open('date.json','w') as f:
             json.dump(date, f)
         return 0
