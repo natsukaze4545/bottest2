@@ -126,6 +126,8 @@ class StopWatchTemp(object):
     def __str__(self) :
         return str( stop() )
 
+s = StopWatchTemp()
+
 def timecount(secs):
 	if secs >= 60:
 		minute = secs//60
