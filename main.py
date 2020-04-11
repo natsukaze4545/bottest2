@@ -150,9 +150,9 @@ def timecount(secs):
 
 
 def count(secs):
-    global set
+    global set_
     for i in range(secs, -1, -1):
-        if set == 1:
+        if set_ == 1:
             if i == 0:
                 if setting_['use'] == False:
                     line_bot_api.reply_message(setting_['ID'],TextSendMessage(text='終了！！\n\n経過時間 : {count}\n経過ポイント : {pointcount_1}\n合計ポイント : {pointcount_2}'.format(count=Time['count'],pointcount_1=Time['pointcount_1'],pointcount_2=Time['pointcount_2'])))
@@ -167,10 +167,10 @@ def count(secs):
 
 
 def pointcount(secs,s_point,point,point2):
-	global set
+	global set_
 	global stoppoint
 	for i in range(0,secs):
-		if set == 1:
+		if set_ == 1:
 			Time['pointcount_1'] = '{}ポイント'.format(math.floor(point+i*s_point))
             #経過ポイント
 			Time['pointcount_2'] = '{}ポイント'.format(math.floor(point2+point+i*s_point))
@@ -181,10 +181,10 @@ def pointcount(secs,s_point,point,point2):
 			pass
 
 def pointcount2(secs,s_point,point,point2):
-	global set
+	global set_
 	global stoppoint
 	for i in range(0,secs):
-		if set == 1:
+		if set_ == 1:
 			Time['pointcount2_1'] = '{}ポイント'.format(math.floor(0-(point+i*s_point)))
 			Time['pointcount2_2'] = '{}ポイント'.format(math.floor(point2-(point+i*s_point)))
 			stoppoint = point+i*s_point
@@ -225,21 +225,21 @@ def handle_message(event):
         setting_['ID'] = msg_from
 
 
-    if msg_text == '貯める' and setting2['setting1'] == True and setting_['ID'] == msg_from:
+    if msg_text == '貯める' and setting2['setting1'] == True:
         setting_['use'] = False
         setting2['setting1'] = False
         setting2['setting2'] = True
         line_bot_api.reply_message(msg_from,TextSendMessage(text='OK！貯めるに設定したよ！\n次は行う人の名前を教えてね！(ニックネーム可)\n[打ち方] 名前:"行う人の名前"\n例: たろうくんの場合　名前:たろう'))
 
 
-    if msg_text == '使う' and setting2['setting1'] == True and setting_['ID'] == msg_from:
+    if msg_text == '使う' and setting2['setting1'] == True:
         setting_['use'] = True
         setting2['setting1'] = False
         setting2['setting2'] = True
         line_bot_api.reply_message(msg_from,TextSendMessage(text='OK！使うに設定したよ！\n次は行う人の名前を教えてね！(ニックネーム可)\n[打ち方] 名前:"行う人の名前"\n例: たろうくんの場合　名前:たろう'))
 
 
-    if '名前' in msg_text and setting2['setting2'] == True and setting_['ID'] == msg_from:
+    if '名前' in msg_text and setting2['setting2'] == True:
         setting2['setting2'] = False
         setting2['setting3'] = True
         name = msg_text.replace("名前:","")
@@ -252,7 +252,7 @@ def handle_message(event):
             line_bot_api.reply_message(msg_from,TextSendMessage(text='OK！今までの合計ポイントは{}だよ！\n次は1分間に消費するポイント数を設定してね！\n[打ち方] ポイント:"一分当たりの消費ポイント(数字)"\n例: 3ポイントの場合　ポイント:3'.format(point)))
 
 
-    if 'ポイント' in msg_text and setting2['setting3'] == True and setting_['ID'] == msg_from:
+    if 'ポイント' in msg_text and setting2['setting3'] == True:
         setting2['setting3'] = False
         setting2['setting4'] = True
         str_timepoint = msg_text.replace("ポイント:","")
@@ -261,7 +261,7 @@ def handle_message(event):
         line_bot_api.reply_message(msg_from,TextSendMessage(text='OK！{}ポイントに設定できたよ！\n最後に、何分行うか設定してね！\n[打ち方] 時間:"行う分数(数字)"\n例: 5分の場合　時間:5'.format(timepoint)))
 
 
-    if '時間' in msg_text and setting2['setting4'] == True and setting_['ID'] == msg_from:
+    if '時間' in msg_text and setting2['setting4'] == True:
         setting2['setting4'] = False
         str_time = msg_text.replace("時間:","")
         int_time = int(str_time)
@@ -279,8 +279,8 @@ def handle_message(event):
 
     if 'スタート' == msg_text:
         s_point = round(setting_['timepoint']/60,2)
-        if set == 1 or set == 2:
-            set = 1
+        if set_ == 1 or set_ == 2:
+            set_ = 1
             secs = setting_['time']*60
             s.start()
             executer = ThreadPoolExecutor(1)
@@ -291,8 +291,8 @@ def handle_message(event):
             if setting_['use'] == True:
                 executer = ThreadPoolExecutor(1)
                 executer.submit(pointcount2, secs,s_point,stoppoint,setting_['point'])
-       	elif set == 0:
-            set = 1
+       	elif set_ == 0:
+            set_ = 1
             secs = setting_['time']*60-stoptime
             s.restart()
             executer = ThreadPoolExecutor(1)
