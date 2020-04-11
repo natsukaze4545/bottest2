@@ -232,11 +232,12 @@ def handle_message(event):
     global stoptime
     msg_from = event.reply_token
     msg_text = event.message.text
+    user_id = event.source.user_id
     if msg_text == '設定する':
         line_bot_api.reply_message(msg_from,TextSendMessage(text='まずは貯めるのか使うのかを教えてね！\n貯める or 使う'))
         setting2['setting1'] = True
-        setting_['ID'] = msg_from
-        print(setting_['ID'])
+        setting_['ID'] = user_id
+        line_bot_api.reply_message(msg_from,TextSendMessage(text=setting_['ID']))
 
 
     if msg_text == '貯める' and setting2['setting1'] == True:
@@ -258,7 +259,7 @@ def handle_message(event):
         setting2['setting3'] = True
         name = msg_text.replace("名前:","")
         setting_['name'] = name
-        point = namecheck(msg_from,name)
+        point = namecheck(user_id,name)
         setting_['point'] = point
         if setting_['use'] == False:
             line_bot_api.reply_message(msg_from,TextSendMessage(text='OK！今までの合計ポイントは{}だよ！\n次は1分間に取得するポイント数を設定してね！\n[打ち方] ポイント:"一分当たりの取得ポイント(数字)"\n例: 3ポイントの場合　ポイント:3'.format(point)))
