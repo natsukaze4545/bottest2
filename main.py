@@ -157,15 +157,20 @@ def timecount(secs):
 
 def count(secs):
     global set_
+    global stoppoint
     for i in range(secs+1, -1, -1):
         if set_ == 1:
             if i == 1:
+                stoppoint = 0
+                Time['count'] = timecount(i-1)
                 if setting_['use'] == False:
-                    line_bot_api.reply_message(setting_['ID'],TextSendMessage(text='終了！！\n\n経過時間 : {count}\n経過ポイント : {pointcount_1}\n合計ポイント : {pointcount_2}'.format(count=Time['count'],pointcount_1=Time['pointcount_1'],pointcount_2=Time['pointcount_2'])))
                     setting_['point'] = Time['pointcount_2']
+                    seve(setting_['ID'])
+                    line_bot_api.reply_message(setting_['ID'],TextSendMessage(text='終了！！\n\n経過時間 : {count}\n経過ポイント : {pointcount_1}\n合計ポイント : {pointcount_2}'.format(count=Time['count'],pointcount_1=Time['pointcount_1'],pointcount_2=Time['pointcount_2'])))
                 if setting_['use'] == True:
-                    line_bot_api.reply_message(setting_['ID'],TextSendMessage(text='終了！！\n\n経過時間 : {count}\n経過ポイント : {pointcount_1}\n合計ポイント : {pointcount_2}'.format(count=Time['count'],pointcount_1=Time['pointcount2_1'],pointcount_2=Time['pointcount2_2'])))
                     setting_['point'] = Time['pointcount2_2']
+                    seve(setting_['ID'])
+                    line_bot_api.reply_message(setting_['ID'],TextSendMessage(text='終了！！\n\n経過時間 : {count}\n経過ポイント : {pointcount_1}\n合計ポイント : {pointcount_2}'.format(count=Time['count'],pointcount_1=Time['pointcount2_1'],pointcount_2=Time['pointcount2_2'])))
             else:
                 Time['count'] = timecount(i-1)
                 #経過時間
@@ -231,6 +236,7 @@ def handle_message(event):
         line_bot_api.reply_message(msg_from,TextSendMessage(text='まずは貯めるのか使うのかを教えてね！\n貯める or 使う'))
         setting2['setting1'] = True
         setting_['ID'] = msg_from
+        line_bot_api.reply_message(msg_from,TextSendMessage(text=setting_['ID']))
 
 
     if msg_text == '貯める' and setting2['setting1'] == True:
@@ -322,17 +328,21 @@ def handle_message(event):
         if setting_['use'] == False:
             line_bot_api.reply_message(msg_from,TextSendMessage(text='スタート で再スタートできるよ！\n経過時間 : {count}\n経過ポイント : {pointcount_1}\n合計ポイント : {pointcount_2}'.format(count=Time['count'],pointcount_1=Time['pointcount_1'],pointcount_2=Time['pointcount_2'])))
             setting_['point'] = Time['pointcount_2']
+            seve(msg_from)
         if setting_['use'] == True:
             line_bot_api.reply_message(msg_from,TextSendMessage(text='スタート で再スタートできるよ！\n経過時間 : {count}\n経過ポイント : {pointcount_1}\n合計ポイント : {pointcount_2}'.format(count=Time['count'],pointcount_1=Time['pointcount2_1'],pointcount_2=Time['pointcount2_2'])))
             setting_['point'] = Time['pointcount2_2']
+            seve(msg_from)
 
     if '確認' == msg_text:
         if setting_['use'] == False:
             line_bot_api.reply_message(msg_from,TextSendMessage(text='経過時間 : {count}\n経過ポイント : {pointcount_1}\n合計ポイント : {pointcount_2}'.format(count=Time['count'],pointcount_1=Time['pointcount_1'],pointcount_2=Time['pointcount_2'])))
             setting_['point'] = Time['pointcount_2']
+            seve(msg_from)
         if setting_['use'] == True:
             line_bot_api.reply_message(msg_from,TextSendMessage(text='経過時間 : {count}\n経過ポイント : {pointcount_1}\n合計ポイント : {pointcount_2}'.format(count=Time['count'],pointcount_1=Time['pointcount2_1'],pointcount_2=Time['pointcount2_2'])))
             setting_['point'] = Time['pointcount2_2']
+            seve(msg_from)
 
 
 if __name__ == "__main__":
