@@ -67,6 +67,10 @@ def namecheck(ID,name):
             json.dump(date, f)
         return 0
 
+def seve(ID):
+    date[ID][setting_['name']] = setting_['point']
+    with open('date.json','w') as f:
+        json.dump(date, f)
 
 
 
@@ -153,15 +157,17 @@ def timecount(secs):
 
 def count(secs):
     global set_
-    for i in range(secs, -1, -1):
+    for i in range(secs+1, -1, -1):
         if set_ == 1:
-            if i == 0:
+            if i == 1:
                 if setting_['use'] == False:
                     line_bot_api.reply_message(setting_['ID'],TextSendMessage(text='終了！！\n\n経過時間 : {count}\n経過ポイント : {pointcount_1}\n合計ポイント : {pointcount_2}'.format(count=Time['count'],pointcount_1=Time['pointcount_1'],pointcount_2=Time['pointcount_2'])))
+                    setting_['point'] = Time['pointcount_2']
                 if setting_['use'] == True:
                     line_bot_api.reply_message(setting_['ID'],TextSendMessage(text='終了！！\n\n経過時間 : {count}\n経過ポイント : {pointcount_1}\n合計ポイント : {pointcount_2}'.format(count=Time['count'],pointcount_1=Time['pointcount2_1'],pointcount_2=Time['pointcount2_2'])))
+                    setting_['point'] = Time['pointcount2_2']
             else:
-                Time['count'] = timecount(i)
+                Time['count'] = timecount(i-1)
                 #経過時間
                 time.sleep(1)
         else:
@@ -309,20 +315,24 @@ def handle_message(event):
 
 
     if 'ストップ' == msg_text:
-        if set == 1:
+        if set_ == 1:
         	t1 = s.stop()
-        	set = 0
+        	set_ = 0
         	stoptime = math.floor(t1)
         if setting_['use'] == False:
             line_bot_api.reply_message(msg_from,TextSendMessage(text='スタート で再スタートできるよ！\n経過時間 : {count}\n経過ポイント : {pointcount_1}\n合計ポイント : {pointcount_2}'.format(count=Time['count'],pointcount_1=Time['pointcount_1'],pointcount_2=Time['pointcount_2'])))
+            setting_['point'] = Time['pointcount_2']
         if setting_['use'] == True:
             line_bot_api.reply_message(msg_from,TextSendMessage(text='スタート で再スタートできるよ！\n経過時間 : {count}\n経過ポイント : {pointcount_1}\n合計ポイント : {pointcount_2}'.format(count=Time['count'],pointcount_1=Time['pointcount2_1'],pointcount_2=Time['pointcount2_2'])))
+            setting_['point'] = Time['pointcount2_2']
 
     if '確認' == msg_text:
         if setting_['use'] == False:
             line_bot_api.reply_message(msg_from,TextSendMessage(text='経過時間 : {count}\n経過ポイント : {pointcount_1}\n合計ポイント : {pointcount_2}'.format(count=Time['count'],pointcount_1=Time['pointcount_1'],pointcount_2=Time['pointcount_2'])))
+            setting_['point'] = Time['pointcount_2']
         if setting_['use'] == True:
             line_bot_api.reply_message(msg_from,TextSendMessage(text='経過時間 : {count}\n経過ポイント : {pointcount_1}\n合計ポイント : {pointcount_2}'.format(count=Time['count'],pointcount_1=Time['pointcount2_1'],pointcount_2=Time['pointcount2_2'])))
+            setting_['point'] = Time['pointcount2_2']
 
 
 if __name__ == "__main__":
