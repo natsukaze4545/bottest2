@@ -237,7 +237,7 @@ def handle_message(event):
         line_bot_api.reply_message(msg_from,TextSendMessage(text='まずは貯めるのか使うのかを教えてね！\n貯める or 使う'))
         setting2['setting1'] = True
         setting_['ID'] = user_id
-        line_bot_api.reply_message(msg_from,TextSendMessage(text=setting_['ID']))
+        print(setting_['ID'])
 
 
     if msg_text == '貯める' and setting2['setting1'] == True:
