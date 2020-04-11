@@ -36,7 +36,6 @@ setting2 = {
 	'setting3':False,
 	'setting4':False,
 	'setting5':False,
-	'setting6':False
 }
 '''
 data = {
