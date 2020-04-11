@@ -198,26 +198,26 @@ def count(secs,user_id):
 
 
 def pointcount(secs,s_point,point,point2,user_id):
-	global set_
-	global stoppoint
-	for i in range(0,secs):
-		if set_ == 1:
-			Time[user_id]['pointcount_1'] = '{}ポイント'.format(math.floor(point+i*s_point))
+    global set_
+    global stoppoint
+    for i in range(0,secs):
+        if set_ == 1:
+            Time[user_id]['pointcount_1'] = math.floor(point+i*s_point)
             #経過ポイント
-			Time[user_id]['pointcount_2'] = '{}ポイント'.format(math.floor(point2+point+i*s_point))
+            Time[user_id]['pointcount_2'] = math.floor(point2+point+i*s_point)
             #合計ポイント
-			stoppoint = point+i*s_point
-			time.sleep(1)
-		else:
-			pass
+            stoppoint = point+i*s_point
+            time.sleep(1)
+    else:
+        pass
 
 def pointcount2(secs,s_point,point,point2,user_id):
 	global set_
 	global stoppoint
 	for i in range(0,secs):
 		if set_ == 1:
-			Time[user_id]['pointcount2_1'] = '{}ポイント'.format(math.floor(0-(point+i*s_point)))
-			Time[user_id]['pointcount2_2'] = '{}ポイント'.format(math.floor(point2-(point+i*s_point)))
+			Time[user_id]['pointcount2_1'] = math.floor(0-(point+i*s_point))
+			Time[user_id]['pointcount2_2'] = math.floor(point2-(point+i*s_point))
 			stoppoint = point+i*s_point
 			time.sleep(1)
 		else:
