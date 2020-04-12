@@ -357,6 +357,7 @@ def callback():
 def handle_message(event):
     global set_
     global stoptime
+    global stoppoint
     msg_from = event.reply_token
     msg_text = event.message.text
     user_id = event.source.user_id
@@ -366,6 +367,11 @@ def handle_message(event):
         setting_[user_id] = {'use':True,'name':'name','point':0,'time':0,'timepoint':0,'ID':'','point2':0,'dbID':0}
         setting_[user_id]['ID'] = user_id
         Time[user_id] = {'count':0,'pointcount_1':0,'pointcount_2':0,'pointcount2_1':0,'pointcount2_2':0}
+        set_ = 2
+
+        stoptime = 0
+
+        stoppoint = 0
 
 
     if msg_text == '貯める' and setting2['setting1'] == True and user_id == setting_[user_id]['ID']:
