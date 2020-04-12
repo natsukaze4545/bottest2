@@ -37,6 +37,8 @@ cur.execute("insert into botdb values({id},'{user_id}','{name}','{point}')".form
 
 cur.execute("UPDATE botdb SET point = '200' WHERE id='2';")
 
+cur.execute("UPDATE botdb SET point = '200' WHERE id='6039';")
+
 cur.execute('SELECT * FROM botdb')
 
 
@@ -168,8 +170,10 @@ def seve(ID):
         if ID+setting_[ID]['name'] in row:
             dbID = row[0]
             cur.execute("UPDATE botdb SET point = '{point}' WHERE id='{dbID}';".format(point=point,dbID=dbID))
+            conn.commit()
             return
     cur.execute("UPDATE botdb SET point = '{point}' WHERE id='{dbID}';".format(point=point,dbID=setting_[ID]['dbID']))
+    conn.commit()
     '''
 
 
