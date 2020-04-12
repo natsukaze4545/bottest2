@@ -63,6 +63,9 @@ print(ok)
 print(row_)
 
 
+cur.execute("UPDATE botdb SET point = '{point}' WHERE id='{dbID}';".format(point='250',dbID='6039'))
+
+
 '''
 
 
@@ -160,24 +163,27 @@ def namecheck(ID,name):
         return 0
 
 def seve(ID):
-    print('ok2')
-    print(setting_[ID]['dbID'])
-    conn = get_connection()
-    cur = conn.cursor()
-    cur.execute("ROLLBACK")
-    conn.commit()
-    cur.execute('SELECT * FROM botdb')
-    point = date[ID]['point'] + setting_[ID]['point2']
-    for row in cur:
-        if ID+setting_[ID]['name'] in row:
-            dbID = row[0]
-            cur.execute("UPDATE botdb SET point = '{point}' WHERE id='{dbID}';".format(point=point,dbID=dbID))
-            conn.commit()
-            print('ok3')
-            return
-    cur.execute("UPDATE botdb SET point = '{point}' WHERE id='{dbID}';".format(point=point,dbID=setting_[ID]['dbID']))
-    conn.commit()
-    print('ok4')
+    try:
+        print('ok2')
+        print(setting_[ID]['dbID'])
+        conn = get_connection()
+        cur = conn.cursor()
+        cur.execute("ROLLBACK")
+        conn.commit()
+        cur.execute('SELECT * FROM botdb')
+        point = date[ID]['point'] + setting_[ID]['point2']
+        for row in cur:
+            if ID+setting_[ID]['name'] in row:
+                dbID = row[0]
+                cur.execute("UPDATE botdb SET point = '{point}' WHERE id='{dbID}';".format(point=str(point),dbID=dbID))
+                conn.commit()
+                print('ok3')
+                return
+        cur.execute("UPDATE botdb SET point = '{point}' WHERE id='{dbID}';".format(point=str(point),dbID=setting_[ID]['dbID']))
+        conn.commit()
+        print('ok4')
+    except Exception as e:
+        print (str(e))
     '''
 
 
