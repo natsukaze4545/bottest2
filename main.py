@@ -172,14 +172,16 @@ def seve(ID):
         conn.commit()
         cur.execute('SELECT * FROM botdb')
         point = date[ID]['point'] + setting_[ID]['point2']
+        str_point = str(point)
         for row in cur:
             if ID+setting_[ID]['name'] in row:
                 dbID = row[0]
-                cur.execute("UPDATE botdb SET point = '{point}' WHERE id='{dbID}';".format(point=str(point),dbID=str(dbID)))
-                conn.commit()
                 print('ok3')
+                cur.execute("UPDATE botdb SET point = '{point}' WHERE id='{dbID}';".format(point=str_point,dbID=dbID))
+                conn.commit()
+                print('ok3-2')
                 return
-        cur.execute("UPDATE botdb SET point = '{point}' WHERE id='{dbID}';".format(point=str(point),dbID=str(setting_[ID]['dbID'])))
+        cur.execute("UPDATE botdb SET point = '{point}' WHERE id='{dbID}';".format(point=str_point,dbID=setting_[ID]['dbID']))
         conn.commit()
         print('ok4')
     except Exception as e:
