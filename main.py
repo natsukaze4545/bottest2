@@ -175,11 +175,11 @@ def seve(ID):
         for row in cur:
             if ID+setting_[ID]['name'] in row:
                 dbID = row[0]
-                cur.execute("UPDATE botdb SET point = '{point}' WHERE id='{dbID}';".format(point=str(point),dbID=dbID))
+                cur.execute("UPDATE botdb SET point = '{point}' WHERE id='{dbID}';".format(point=str(point),dbID=str(dbID)))
                 conn.commit()
                 print('ok3')
                 return
-        cur.execute("UPDATE botdb SET point = '{point}' WHERE id='{dbID}';".format(point=str(point),dbID=setting_[ID]['dbID']))
+        cur.execute("UPDATE botdb SET point = '{point}' WHERE id='{dbID}';".format(point=str(point),dbID=str(setting_[ID]['dbID'])))
         conn.commit()
         print('ok4')
     except Exception as e:
