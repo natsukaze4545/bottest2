@@ -24,6 +24,7 @@ def get_connection():
     dsn = os.environ.get('DATABASE_URL')
     return psycopg2.connect(dsn)
 
+'''
 
 conn = get_connection()
 
@@ -60,7 +61,7 @@ print(ok)
 print(row_)
 
 
-
+'''
 
 
 set_ = 2
