@@ -16,10 +16,9 @@ db = SQLAlchemy(app)
 
 class Entry(db.Model):
     # テーブル名を定義
-    __tablename__ = "botdb"
+    __tablename__ = "db"
 
     # カラムを定義
-    id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.String(), nullable=False)
     name = db.Column(db.String(), nullable=False)
     point = db.Column(db.String(), nullable=False)
