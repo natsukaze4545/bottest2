@@ -112,10 +112,11 @@ Time = {
 }
 
 
-data = {
-    'ID':{'name':'point'}
+date = {
+    'ID':{'point':0}
 }
 '''
+date = {}
 def namecheck(ID,name):
     random_id = random.randint(1,9999)
     point = None
