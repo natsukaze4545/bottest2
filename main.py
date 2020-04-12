@@ -160,6 +160,8 @@ def namecheck(ID,name):
         return 0
 
 def seve(ID):
+    print('ok2')
+    print(setting_[ID]['dbID'])
     conn = get_connection()
     cur = conn.cursor()
     cur.execute("ROLLBACK")
@@ -171,9 +173,11 @@ def seve(ID):
             dbID = row[0]
             cur.execute("UPDATE botdb SET point = '{point}' WHERE id='{dbID}';".format(point=point,dbID=dbID))
             conn.commit()
+            print('ok3')
             return
     cur.execute("UPDATE botdb SET point = '{point}' WHERE id='{dbID}';".format(point=point,dbID=setting_[ID]['dbID']))
     conn.commit()
+    print('ok4')
     '''
 
 
@@ -275,9 +279,13 @@ def count(secs,user_id):
                 stoppoint = 0
                 Time[user_id]['count'] = timecount(i-1)
                 if setting_[user_id]['use'] == False:
+                    print('1')
                     setting_[user_id]['point2'] = Time[user_id]['pointcount_1']
+                    print('2')
                     seve(user_id)
+                    print('3')
                     line_bot_api.push_message(setting_[user_id]['ID'],TextSendMessage(text='終了！！\n\n残り時間 : {count}\n経過ポイント : {pointcount_1}\n合計ポイント : {pointcount_2}'.format(count=Time[user_id]['count'],pointcount_1=Time[user_id]['pointcount_1'],pointcount_2=Time[user_id]['pointcount_2'])))
+                    print('4')
                 if setting_[user_id]['use'] == True:
                     setting_[user_id]['point2'] = Time[user_id]['pointcount2_1']
                     seve(user_id)
