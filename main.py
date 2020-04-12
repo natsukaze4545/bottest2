@@ -16,6 +16,52 @@ import math
 import json
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
+import psycopg2
+import random
+
+
+def get_connection():
+    dsn = os.environ.get('DATABASE_URL')
+    return psycopg2.connect(dsn)
+
+
+conn = get_connection()
+
+cur = conn.cursor()
+
+
+sql = "insert into retasudb values('user_id','Aくん','100')"
+
+cur.execute("insert into botdb values({id},'{user_id}','{name}','{point}')".format(id=2,user_id='user_id2'+'Aくん2',name='Aくん',point='200'))
+
+cur.execute("UPDATE botdb SET point = '200' WHERE id='2';")
+
+cur.execute('SELECT * FROM botdb')
+
+
+
+cur = connection.cursor()
+cur.execute("ROLLBACK")
+conn.commit()
+
+cur.execute('SELECT * FROM botdb')
+
+row_ = []
+
+for row in cur:
+    if 'user_id2Aくん' in row:
+        ok = row[3]
+    else:
+        pass
+    row_.append(row)
+
+print(ok)
+
+print(row_)
+
+
+
+
 
 set_ = 2
 
@@ -70,26 +116,67 @@ data = {
 }
 '''
 def namecheck(ID,name):
+    random_id = random.randint(1,9999)
+    point = None
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute("ROLLBACK")
+    conn.commit()
+    cur.execute('SELECT * FROM botdb')
+    date[ID] = {'point':0}
+    '''
     with open('date.json','r') as f:
         date = json.load(f)
+    '''
+    for row in cur:
+        if ID+name in row:
+            str_point = row[3]
+            setting_[ID]['dbID'] = row[0]
+            date[ID]['point'] = row_[3]
+            return int(point)
+    '''
     if ID in date:
         if name in date[ID]:
             point = date[ID][name]
             return point
+    '''
+    if point == None:
+        setting_[ID]['dbID'] = random_id
+        date[ID]['point'] = 0
+        cur.execute("insert into botdb values({id},'{user_id}','{name}','{point}')".format(id=random_id,user_id=ID+name,name=name,point='0'))
+        conn.commit()
+        return 0
+
+
     else:
-        date[ID] = {name:0}
-        with open('date.json','w') as f:
-            json.dump(date, f)
+        setting_[ID]['dbID'] = random_id
+        date[ID]['point'] = 0
+        cur.execute("insert into botdb values({id},'{user_id}','{name}','{point}')".format(id=random_id,user_id=ID+name,name=name,point='0'))
+        conn.commit()
         return 0
 
 def seve(ID):
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute("ROLLBACK")
+    conn.commit()
+    cur.execute('SELECT * FROM botdb')
+    point = date[ID]['point'] + setting_[ID]['point2']
+    for row in cur:
+        if ID+setting_[ID]['name'] in row:
+            dbID = row[0]
+            cur.execute("UPDATE botdb SET point = '{point}' WHERE id='{dbID}';".format(point=point,dbID=dbID))
+            return
+    cur.execute("UPDATE botdb SET point = '{point}' WHERE id='{dbID}';".format(point=point,dbID=setting_[ID]['dbID']))
+    '''
+
+
     with open('date.json','r') as f:
         date = json.load(f)
     date[ID][setting_[ID]['name']] = date[ID][setting_[ID]['name']] + setting_[ID]['point2']
     with open('date.json','w') as f:
         json.dump(date, f)
-
-
+    '''
 
 
 #環境変数取得
@@ -254,7 +341,7 @@ def handle_message(event):
     if msg_text == '設定する':
         line_bot_api.reply_message(msg_from,TextSendMessage(text='まずは貯めるのか使うのかを教えてね！\n貯める or 使う'))
         setting2['setting1'] = True
-        setting_[user_id] = {'use':True,'name':'name','point':0,'time':0,'timepoint':0,'ID':'','point2':0}
+        setting_[user_id] = {'use':True,'name':'name','point':0,'time':0,'timepoint':0,'ID':'','point2':0,'dbID':0}
         setting_[user_id]['ID'] = user_id
         Time[user_id] = {'count':0,'pointcount_1':0,'pointcount_2':0,'pointcount2_1':0,'pointcount2_2':0}
 
