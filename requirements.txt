@@ -5,4 +5,4 @@ psutil
 psycopg2
 flask-sqlalchemy
 hamlish_jinja
-werkzeug
+werkzeug==0.16.1
