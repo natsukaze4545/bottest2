@@ -139,7 +139,7 @@ def namecheck(ID,name):
         if ID+name in row:
             str_point = row[3]
             setting_[ID]['dbID'] = row[0]
-            date[ID]['point'] = row[3]
+            date[ID]['point'] = int(str_point)
             return int(str_point)
     '''
     if ID in date:
