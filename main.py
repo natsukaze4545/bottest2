@@ -246,9 +246,9 @@ def seve3(ID):
         cur.execute("ROLLBACK")
         conn.commit()
         if pdate[ID]['save'] == True:
-            date = '追加:'+pdate[ID]['date']
+            date = '追加:'+pdate[ID]['date']+':'+pdate[ID]['point']+'ポイント'
         if pdate[ID]['save'] == False:
-            date = '削除:'+pdate[ID]['date']
+            date = '削除:'+pdate[ID]['date']+':'+pdate[ID]['point']+'ポイント'
         cur.execute("insert into botdb values({id},'{user_id}','{date}','{datetime}')".format(id=random_id,user_id=ID+pdate[ID]['name']+'point',date=date,datetime=tstr))
         #cur.execute("insert into botdb values({id},'{user_id}','{date}','{datetime}')".format(id=random_id,user_id=ID+name+'point',date='追加:早起き:10ポイント',datetime='2020-4-14 00:00:00'))
         conn.commit()
@@ -270,7 +270,7 @@ def pointcheck(ID,name):
                 tdatetime = dt.strptime(tstr, '%Y-%m-%d %H:%M:%S')
                 list_ = [date,tdatetime]
                 date_list.append(list_)
-        d = sorted(date_list, key=lambda s: s[1], reverse=True)
+        d = sorted(date_list, key=lambda s: s[1])
         return d
     except Exception as e:
         print (str(e))
