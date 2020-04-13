@@ -221,7 +221,7 @@ def seve2(ID,point):
         cur.execute('SELECT * FROM botdb')
         point_ = namecheck(ID,pdate[ID]['name'])
         point2 = point_ + point
-        str_point = str(point)
+        str_point = str(point2)
         for row in cur:
             if ID+setting_[ID]['name'] in row:
                 dbID = row[0]
@@ -249,7 +249,7 @@ def seve3(ID):
             date = '追加:'+pdate[ID]['date']
         if pdate[ID]['save'] == False:
             date = '削除:'+pdate[ID]['date']
-        cur.execute("insert into botdb values({id},'{user_id}','{date}','{datetime}')".format(id=random_id,user_id=ID+name+'point',date=date,datetime=tstr))
+        cur.execute("insert into botdb values({id},'{user_id}','{date}','{datetime}')".format(id=random_id,user_id=ID+pdate[ID]['name']+'point',date=date,datetime=tstr))
         #cur.execute("insert into botdb values({id},'{user_id}','{date}','{datetime}')".format(id=random_id,user_id=ID+name+'point',date='追加:早起き:10ポイント',datetime='2020-4-14 00:00:00'))
         conn.commit()
     except Exception as e:
@@ -557,6 +557,7 @@ def handle_message(event):
 
 
     if 'ポイント追加' == msg_text:
+        setting_[user_id] = {'use':True,'name':'name','point':0,'time':0,'timepoint':0,'ID':'','point2':0,'dbID':0}
         setting2[user_id] = {'setting1':False,'setting2':False,'setting3':False,'setting4':False,'setting5':False,'setting6':False,'setting7':False,'setting8':False,'setting9':False,'setting10':False,}
         line_bot_api.reply_message(msg_from,TextSendMessage(text='まずはやったひとの名前を教えてね！\n[打ち方]　やったひと:"名前"\n例: たろうくんの場合  やったひと:たろう'))
         setting2[user_id]['setting9'] = True
@@ -564,6 +565,7 @@ def handle_message(event):
 
 
     if 'ポイント削除' == msg_text:
+        setting_[user_id] = {'use':True,'name':'name','point':0,'time':0,'timepoint':0,'ID':'','point2':0,'dbID':0}
         setting2[user_id] = {'setting1':False,'setting2':False,'setting3':False,'setting4':False,'setting5':False,'setting6':False,'setting7':False,'setting8':False,'setting9':False,'setting10':False,}
         line_bot_api.reply_message(msg_from,TextSendMessage(text='まずはやったひとの名前を教えてね！\n[打ち方]　やったひと:"名前"\n例: たろうくんの場合  やったひと:たろう'))
         setting2[user_id]['setting10'] = True
