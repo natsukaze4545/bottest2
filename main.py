@@ -481,7 +481,7 @@ def handle_message(event):
             line_bot_api.reply_message(msg_from,TextSendMessage(text='OK！今までの合計ポイントは{}だよ！\n次は1分間に消費するポイント数を設定してね！\n[打ち方] ポイント:"一分当たりの消費ポイント(数字)"\n例: 3ポイントの場合　ポイント:3'.format(point)))
 
 
-    if 'ポイント' in msg_text and setting2[user_id]['setting3'] == True and user_id == setting_[user_id]['ID']:
+    if 'ポイント:' in msg_text and setting2[user_id]['setting3'] == True and user_id == setting_[user_id]['ID']:
         setting2[user_id]['setting3'] = False
         setting2[user_id]['setting4'] = True
         str_timepoint = msg_text.replace("ポイント:","")
