@@ -469,7 +469,7 @@ def handle_message(event):
         line_bot_api.reply_message(msg_from,TextSendMessage(text='OK！使うに設定したよ！\n次は行う人の名前を教えてね！(ニックネーム可)'))
 
 
-    if setting2[user_id]['setting2'] == True and user_id == setting_[user_id]['ID']:
+    if msg_text is not None and setting2[user_id]['setting2'] == True and user_id == setting_[user_id]['ID']:
         setting2[user_id]['setting2'] = False
         setting2[user_id]['setting3'] = True
         name = msg_text
