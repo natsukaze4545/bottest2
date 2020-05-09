@@ -8,7 +8,7 @@ from linebot.exceptions import (
     InvalidSignatureError
 )
 from linebot.models import (
-    MessageEvent, TextMessage, TextSendMessage, FlexSendMessage, TemplateSendMessage,ButtonsTemplate,URIAction,
+    MessageEvent, TextMessage, TextSendMessage, FlexSendMessage, TemplateSendMessage,ButtonsTemplate,URIAction,QuickReplyButton,QuickReply
 )
 
 import time
@@ -441,7 +441,8 @@ def handle_message(event):
     msg_text = event.message.text
     user_id = event.source.user_id
     if msg_text == '設定する':
-        line_bot_api.reply_message(msg_from,TextSendMessage(text='まずは貯めるのか使うのかを教えてね！\n貯める or 使う'))
+        items = {'items': [{'type': 'action','action': {'type': 'message','label': '貯める','text': '貯める'}},{'type': 'action','action': {'type': 'message','label': '使う','text': '使う'}}]}
+        line_bot_api.reply_message(msg_from,TextSendMessage(text='まずは貯めるのか使うのかを教えてね！',quickReply=items))
         setting_[user_id] = {'use':True,'name':'name','point':0,'time':0,'timepoint':0,'ID':'','point2':0,'dbID':0}
         setting_[user_id]['ID'] = user_id
         Time[user_id] = {'count':0,'pointcount_1':0,'pointcount_2':0,'pointcount2_1':0,'pointcount2_2':0}
@@ -458,47 +459,50 @@ def handle_message(event):
         setting_[user_id]['use'] = False
         setting2[user_id]['setting1'] = False
         setting2[user_id]['setting2'] = True
-        line_bot_api.reply_message(msg_from,TextSendMessage(text='OK！貯めるに設定したよ！\n次は行う人の名前を教えてね！(ニックネーム可)\n[打ち方] 名前:"行う人の名前"\n例: たろうくんの場合　名前:たろう'))
+        line_bot_api.reply_message(msg_from,TextSendMessage(text='OK！貯めるに設定したよ！\n次は行う人の名前を教えてね！(ニックネーム可)'))
 
 
     if msg_text == '使う' and setting2[user_id]['setting1'] == True and user_id == setting_[user_id]['ID']:
         setting_[user_id]['use'] = True
         setting2[user_id]['setting1'] = False
         setting2[user_id]['setting2'] = True
-        line_bot_api.reply_message(msg_from,TextSendMessage(text='OK！使うに設定したよ！\n次は行う人の名前を教えてね！(ニックネーム可)\n[打ち方] 名前:"行う人の名前"\n例: たろうくんの場合　名前:たろう'))
+        line_bot_api.reply_message(msg_from,TextSendMessage(text='OK！使うに設定したよ！\n次は行う人の名前を教えてね！(ニックネーム可)'))
 
 
-    if '名前' in msg_text and setting2[user_id]['setting2'] == True and user_id == setting_[user_id]['ID']:
+    if setting2[user_id]['setting2'] == True and user_id == setting_[user_id]['ID']:
         setting2[user_id]['setting2'] = False
         setting2[user_id]['setting3'] = True
-        name = msg_text.replace("名前:","")
+        name = msg_text
         setting_[user_id]['name'] = name
         point = namecheck(user_id,name)
         setting_[user_id]['point'] = point
+        items = {'items': [{'type': 'action','action': {'type': 'message','label': '10ポイント','text': '10'}},{'type': 'action','action': {'type': 'message','label': '20ポイント','text': '20'}},{'type': 'action','action': {'type': 'message','label': '50ポイント','text': '50'}},{'type': 'action','action': {'type': 'message','label': '100ポイント','text': '100'}}]}
         if setting_[user_id]['use'] == False:
-            line_bot_api.reply_message(msg_from,TextSendMessage(text='OK！今までの合計ポイントは{}だよ！\n次は1分間に取得するポイント数を設定してね！\n[打ち方] ポイント:"一分当たりの取得ポイント(数字)"\n例: 3ポイントの場合　ポイント:3'.format(point)))
+            line_bot_api.reply_message(msg_from,TextSendMessage(text='OK！今までの合計ポイントは{}だよ！\n次は1分間に取得するポイント数を設定してね！'.format(point),quickReply=items))
         if setting_[user_id]['use'] == True:
-            line_bot_api.reply_message(msg_from,TextSendMessage(text='OK！今までの合計ポイントは{}だよ！\n次は1分間に消費するポイント数を設定してね！\n[打ち方] ポイント:"一分当たりの消費ポイント(数字)"\n例: 3ポイントの場合　ポイント:3'.format(point)))
+            line_bot_api.reply_message(msg_from,TextSendMessage(text='OK！今までの合計ポイントは{}だよ！\n次は1分間に消費するポイント数を設定してね！'.format(point),quickReply=items))
 
 
-    if 'ポイント:' in msg_text and setting2[user_id]['setting3'] == True and user_id == setting_[user_id]['ID']:
+    if setting2[user_id]['setting3'] == True and user_id == setting_[user_id]['ID']:
         setting2[user_id]['setting3'] = False
         setting2[user_id]['setting4'] = True
-        str_timepoint = msg_text.replace("ポイント:","")
+        str_timepoint = msg_text
         timepoint = int(str_timepoint)
         setting_[user_id]['timepoint'] = timepoint
-        line_bot_api.reply_message(msg_from,TextSendMessage(text='OK！{}ポイントに設定できたよ！\n最後に、何分行うか設定してね！\n[打ち方] 時間:"行う分数(数字)"\n例: 5分の場合　時間:5'.format(timepoint)))
+        items = {'items': [{'type': 'action','action': {'type': 'message','label': '1分','text': '1'}},{'type': 'action','action': {'type': 'message','label': '5分','text': '5'}},{'type': 'action','action': {'type': 'message','label': '10分','text': '10'}},{'type': 'action','action': {'type': 'message','label': '30分','text': '30'}},{'type': 'action','action': {'type': 'message','label': '1時間','text': '60'}}]}
+        line_bot_api.reply_message(msg_from,TextSendMessage(text='OK！{}ポイントに設定できたよ！\n最後に、何分行うか設定してね！'.format(timepoint),quickReply=items))
 
 
-    if '時間' in msg_text and setting2[user_id]['setting4'] == True and user_id == setting_[user_id]['ID']:
+    if setting2[user_id]['setting4'] == True and user_id == setting_[user_id]['ID']:
         setting2[user_id]['setting4'] = False
-        str_time = msg_text.replace("時間:","")
+        str_time = msg_text
         int_time = int(str_time)
         setting_[user_id]['time'] = int_time
+        items = {'items': [{'type': 'action','action': {'type': 'message','label': 'スタート','text': 'スタート'}}]}
         if setting_[user_id]['use'] == False:
-            line_bot_api.reply_message(msg_from,TextSendMessage(text='OK！{_time}分に設定できたよ！\n設定項目\n貯めるか使うか : 貯める\n行う人の名前 : {name}\n今までのポイント : {point}\n一分当たりの獲得ポイント : {timepoint}\n行う時間 : {time_}\n始める場合は スタート と言ってね'.format(_time=int_time,name=setting_[user_id]['name'],point=setting_[user_id]['point'],timepoint=setting_[user_id]['timepoint'],time_=setting_[user_id]['time'])))
+            line_bot_api.reply_message(msg_from,TextSendMessage(text='OK！{_time}分に設定できたよ！\n設定項目\n貯めるか使うか : 貯める\n行う人の名前 : {name}\n今までのポイント : {point}\n一分当たりの獲得ポイント : {timepoint}\n行う時間 : {time_}\n始める場合は スタート と言ってね'.format(_time=int_time,name=setting_[user_id]['name'],point=setting_[user_id]['point'],timepoint=setting_[user_id]['timepoint'],time_=setting_[user_id]['time']),quickReply=items))
         if setting_[user_id]['use'] == True:
-            line_bot_api.reply_message(msg_from,TextSendMessage(text='OK！{_time}分に設定できたよ！\n設定項目\n貯めるか使うか : 使う\n行う人の名前 : {name}\n今までのポイント : {point}\n一分当たりの消費ポイント : {timepoint}\n行う時間 : {time_}\n始める場合は スタート と言ってね'.format(_time=int_time,name=setting_[user_id]['name'],point=setting_[user_id]['point'],timepoint=setting_[user_id]['timepoint'],time_=setting_[user_id]['time'])))
+            line_bot_api.reply_message(msg_from,TextSendMessage(text='OK！{_time}分に設定できたよ！\n設定項目\n貯めるか使うか : 使う\n行う人の名前 : {name}\n今までのポイント : {point}\n一分当たりの消費ポイント : {timepoint}\n行う時間 : {time_}\n始める場合は スタート と言ってね'.format(_time=int_time,name=setting_[user_id]['name'],point=setting_[user_id]['point'],timepoint=setting_[user_id]['timepoint'],time_=setting_[user_id]['time']),quickReply=items))
 
     if '設定確認' in msg_text:
         if setting_[user_id]['use'] == False:
@@ -532,19 +536,21 @@ def handle_message(event):
             if setting_[user_id]['use'] == True:
                 executer = ThreadPoolExecutor(1)
                 executer.submit(pointcount2, secs,s_point,stoppoint,setting_[user_id]['point'],user_id)
+        items = {'items': [{'type': 'action','action': {'type': 'message','label': 'ストップする','text': 'ストップ'}},{'type': 'action','action': {'type': 'message','label': '進行状況を見る','text': '確認'}}]}
         line_bot_api.reply_message(msg_from,TextSendMessage(text='スタートしたよ！\n一時停止したいときは ストップ と言ってね！\n確認 で進行状況が確認できるよ！'))
 
 
     if 'ストップ' == msg_text:
+        items = {'items': [{'type': 'action','action': {'type': 'message','label': 'スタート','text': 'スタート'}}]}
         if set_ == 1:
         	t1 = s.stop()
         	set_ = 0
         	stoptime = math.floor(t1)
         if setting_[user_id]['use'] == False:
-            line_bot_api.reply_message(msg_from,TextSendMessage(text='スタート で再スタートできるよ！\n残り時間 : {count}\n経過ポイント : {pointcount_1}\n合計ポイント : {pointcount_2}'.format(count=Time[user_id]['count'],pointcount_1=Time[user_id]['pointcount_1'],pointcount_2=Time[user_id]['pointcount_2'])))
+            line_bot_api.reply_message(msg_from,TextSendMessage(text='スタート で再スタートできるよ！\n残り時間 : {count}\n経過ポイント : {pointcount_1}\n合計ポイント : {pointcount_2}'.format(count=Time[user_id]['count'],pointcount_1=Time[user_id]['pointcount_1'],pointcount_2=Time[user_id]['pointcount_2']),quickReply=items))
             setting_[user_id]['point2'] = Time[user_id]['pointcount_1']
         if setting_[user_id]['use'] == True:
-            line_bot_api.reply_message(msg_from,TextSendMessage(text='スタート で再スタートできるよ！\n残り時間 : {count}\n経過ポイント : {pointcount_1}\n合計ポイント : {pointcount_2}'.format(count=Time[user_id]['count'],pointcount_1=Time[user_id]['pointcount2_1'],pointcount_2=Time[user_id]['pointcount2_2'])))
+            line_bot_api.reply_message(msg_from,TextSendMessage(text='スタート で再スタートできるよ！\n残り時間 : {count}\n経過ポイント : {pointcount_1}\n合計ポイント : {pointcount_2}'.format(count=Time[user_id]['count'],pointcount_1=Time[user_id]['pointcount2_1'],pointcount_2=Time[user_id]['pointcount2_2']),quickReply=items))
             setting_[user_id]['point2'] = Time[user_id]['pointcount2_1']
 
     if '確認' == msg_text:
@@ -559,7 +565,7 @@ def handle_message(event):
     if 'ポイント追加' == msg_text:
         setting_[user_id] = {'use':True,'name':'name','point':0,'time':0,'timepoint':0,'ID':'','point2':0,'dbID':0}
         setting2[user_id] = {'setting1':False,'setting2':False,'setting3':False,'setting4':False,'setting5':False,'setting6':False,'setting7':False,'setting8':False,'setting9':False,'setting10':False,}
-        line_bot_api.reply_message(msg_from,TextSendMessage(text='まずはやったひとの名前を教えてね！\n[打ち方]　やったひと:"名前"\n例: たろうくんの場合  やったひと:たろう'))
+        line_bot_api.reply_message(msg_from,TextSendMessage(text='まずはやったひとの名前を教えてね！'))
         setting2[user_id]['setting9'] = True
         pdate[user_id] = {'save': True,'date': '','point':'','name':''}
 
@@ -567,47 +573,49 @@ def handle_message(event):
     if 'ポイント削除' == msg_text:
         setting_[user_id] = {'use':True,'name':'name','point':0,'time':0,'timepoint':0,'ID':'','point2':0,'dbID':0}
         setting2[user_id] = {'setting1':False,'setting2':False,'setting3':False,'setting4':False,'setting5':False,'setting6':False,'setting7':False,'setting8':False,'setting9':False,'setting10':False,}
-        line_bot_api.reply_message(msg_from,TextSendMessage(text='まずはやったひとの名前を教えてね！\n[打ち方]　やったひと:"名前"\n例: たろうくんの場合  やったひと:たろう'))
+        line_bot_api.reply_message(msg_from,TextSendMessage(text='まずはやったひとの名前を教えてね！'))
         setting2[user_id]['setting10'] = True
         pdate[user_id] = {'save': False,'date': '','point':'','name':''}
 
-    if 'やったひと' in msg_text:
-        date = msg_text.replace("やったひと:","")
+    if setting2[user_id]['setting9'] == True or setting2[user_id]['setting10'] == True:
+        date = msg_text
         if setting2[user_id]['setting9'] == True:
-            line_bot_api.reply_message(msg_from,TextSendMessage(text='{date}さんがしたんだね！\n\n次はやったことを教えてね！\n[打ち方]　やったこと:"やったこと"\n例:  早起きムした場合  やったこと:早起き'.format(date=date)))
+            line_bot_api.reply_message(msg_from,TextSendMessage(text='{date}さんがしたんだね！\n\n次はやったことを教えてね！'.format(date=date)))
             pdate[user_id]['name'] = date
             setting2[user_id]['setting9'] = False
             setting2[user_id]['setting5'] = True
         if setting2[user_id]['setting10'] == True:
-            line_bot_api.reply_message(msg_from,TextSendMessage(text='{date}さんがしたんだね！\n\n次はやったことを教えてね！\n[打ち方]　やったこと:"やったこと"\n例:  ゲームした場合  やったこと:ゲーム'.format(date=date)))
+            line_bot_api.reply_message(msg_from,TextSendMessage(text='{date}さんがしたんだね！\n\n次はやったことを教えてね！'.format(date=date)))
             pdate[user_id]['name'] = date
             setting2[user_id]['setting10'] = False
             setting2[user_id]['setting6'] = True
 
 
-    if 'やったこと' in msg_text:
-        date = msg_text.replace("やったこと:","")
+    if setting2[user_id]['setting5'] == True or setting2[user_id]['setting6'] == True:
+        date = msg_text
+        items = {'items': [{'type': 'action','action': {'type': 'message','label': '5ポイント','text': '5'}},{'type': 'action','action': {'type': 'message','label': '10ポイント','text': '10'}},{'type': 'action','action': {'type': 'message','label': '20ポイント','text': '20'}},{'type': 'action','action': {'type': 'message','label': '50ポイント','text': '50'}}]}
         if setting2[user_id]['setting5'] == True:
-            line_bot_api.reply_message(msg_from,TextSendMessage(text='{date}をしたんだね！\n\n次は追加するポイントを教えてね！\n[打ち方]　ポイント:"ポイント数(数字)"\n例: 10ポイントの場合  ポイント:10'.format(date=date)))
+            line_bot_api.reply_message(msg_from,TextSendMessage(text='{date}をしたんだね！\n\n次は追加するポイントを教えてね！'.format(date=date),quickReply=items))
             pdate[user_id]['date'] = date
             setting2[user_id]['setting5'] = False
             setting2[user_id]['setting7'] = True
         if setting2[user_id]['setting6'] == True:
-            line_bot_api.reply_message(msg_from,TextSendMessage(text='{date}をしたんだね！\n\n次は削除するポイントを教えてね！\n[打ち方]　ポイント:"ポイント数(数字)"\n例: 10ポイントの場合  ポイント:10'.format(date=date)))
+            line_bot_api.reply_message(msg_from,TextSendMessage(text='{date}をしたんだね！\n\n次は削除するポイントを教えてね！'.format(date=date),quickReply=items))
             pdate[user_id]['date'] = date
             setting2[user_id]['setting6'] = False
             setting2[user_id]['setting8'] = True
 
-    if 'ポイント' in msg_text:
-        point = msg_text.replace("ポイント:","")
+    if setting2[user_id]['setting7'] == True or setting2[user_id]['setting8'] == True:
+        point = msg_text
+        items = {'items': [{'type': 'action','action': {'type': 'message','label': '今までの記録を確認する','text': '記録確認'}}]}
         if setting2[user_id]['setting7'] == True:
-            line_bot_api.reply_message(msg_from,TextSendMessage(text='{date}をしたから{point}追加されたよ！\n\n今までの記録は  記録確認  で見れるよ！'.format(date=pdate[user_id]['date'],point=point)))
+            line_bot_api.reply_message(msg_from,TextSendMessage(text='{date}をしたから{point}追加されたよ！\n\n今までの記録は  記録確認  で見れるよ！'.format(date=pdate[user_id]['date'],point=point),quickReply=items))
             pdate[user_id]['point'] = point
             setting2[user_id]['setting7'] = False
             seve2(user_id,int(point))
             seve3(user_id)
         if setting2[user_id]['setting8'] == True:
-            line_bot_api.reply_message(msg_from,TextSendMessage(text='{date}をしたから{point}削除したよ！\n\n今までの記録は  記録確認  で見れるよ！'.format(date=pdate[user_id]['date'],point=point)))
+            line_bot_api.reply_message(msg_from,TextSendMessage(text='{date}をしたから{point}削除したよ！\n\n今までの記録は  記録確認  で見れるよ！'.format(date=pdate[user_id]['date'],point=point),quickReply=items))
             setting2[user_id]['setting8'] = False
             int_point = int(point)
             point2 = -int_point
